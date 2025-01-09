@@ -35,6 +35,10 @@ jobs:
         run: msbuild $env:SolutionName /t:Restore /p:Configuration=Release
       - name: Build solution
         run: msbuild $env:SolutionName /t:Build /p:Configuration=Release
+      - name: Delete files
+        run: |
+          Remove-Item -Path Output/Release/*.lib
+          Remove-Item -Path Output/Release/*.exp
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
