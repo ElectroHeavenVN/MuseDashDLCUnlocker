@@ -37,6 +37,7 @@ static void Main()
 {
     while (!FindMainWindow(GetCurrentProcessId()))
         Sleep(50);
+	Sleep(1000);
     MH_Initialize();
     Il2cpp::initialize();
     const auto il2cppImages = std::make_unique<Wrapper>();
