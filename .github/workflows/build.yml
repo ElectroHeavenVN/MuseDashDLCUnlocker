@@ -12,8 +12,9 @@ on:
         type: string
       body:
         description: 'Body for the release'
-        required: true
+        required: false
         type: string
+        default: ''
 permissions:
   contents: write
   actions: write
