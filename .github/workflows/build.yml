@@ -64,7 +64,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ github.event.inputs.name }}
           draft: false
-          prerelease: true
+          prerelease: false
           make_latest: true
           tag_name: ${{ github.event.inputs.tag }}
           body: ${{ github.event.inputs.body }}
