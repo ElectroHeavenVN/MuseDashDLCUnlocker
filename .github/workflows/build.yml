@@ -1,0 +1,65 @@
+name: Build solution and publish release
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name for the release'
+        required: true
+        type: string
+      tag:
+        description: 'Tag for the release'
+        required: true
+        type: string
+      body:
+        description: 'Body for the release'
+        required: true
+        type: string
+permissions:
+  contents: write
+  actions: write
+jobs:
+  build:
+    name: Build solution and publish release
+    runs-on: windows-latest
+    env:
+      SolutionName: MuseDashDLCUnlocker.sln
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+      - name: Restore solution
+        run: msbuild $env:SolutionName /t:Restore /p:Configuration=Release
+      - name: Build solution
+        run: msbuild $env:SolutionName /t:Build /p:Configuration=Release
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MuseDashDLCUnlocker
+          path: Output/Release/*
+
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: dawidd6/action-download-artifact@v7
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow_search: false
+          workflow_conclusion: ""
+          skip_unpack: true
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: MuseDashDLCUnlocker.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.event.inputs.name }}
+          draft: false
+          prerelease: true
+          make_latest: true
+          tag_name: ${{ github.event.inputs.tag }}
+          body: ${{ github.event.inputs.body }}
